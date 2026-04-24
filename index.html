@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VizelsTweaks</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --bg: #030303;
+      --panel: rgba(255, 255, 255, 0.055);
+      --panel-2: rgba(255, 255, 255, 0.085);
+      --border: rgba(255, 255, 255, 0.13);
+      --border-bright: rgba(255, 255, 255, 0.35);
+      --text: #ffffff;
+      --muted: #a9a9a9;
+      --soft: #d8d8d8;
+      --white: #ffffff;
+      --black: #000000;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .animated-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255,255,255,0.11), transparent 27%),
+        radial-gradient(circle at 80% 35%, rgba(255,255,255,0.08), transparent 28%),
+        radial-gradient(circle at 50% 90%, rgba(255,255,255,0.09), transparent 32%),
+        #030303;
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgPulse {
+      from { filter: brightness(0.9); }
+      to { filter: brightness(1.18); }
+    }
+
+    .animated-bg::before,
+    .animated-bg::after {
+      content: "";
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 60%);
+      filter: blur(22px);
+      animation: drift 11s ease-in-out infinite alternate;
+    }
+
+    .animated-bg::before {
+      top: -260px;
+      left: -230px;
+    }
+
+    .animated-bg::after {
+      right: -260px;
+      bottom: -260px;
+      animation-delay: 2s;
+    }
+
+    .grid-lines {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 58px 58px;
+      animation: gridMove 20s linear infinite;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent 80%);
+    }
+
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    .boost-box {
+      margin-top: 28px;
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(255,255,255,0.12);
+      max-width: 670px;
+    }
+
+    .boost-box h3 {
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .boost-box p {
+      margin-bottom: 14px;
+      font-size: 0.92rem;
+      color: #bdbdbd;
+    }
+
+    .boost-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .boost-fill {
+      width: 92%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff2b2b, #ffffff);
+      border-radius: 999px;
+      box-shadow: 0 0 22px rgba(255,43,43,0.55);
+      animation: boostPulse 2.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes boostPulse {
+      from { filter: brightness(0.85); }
+      to { filter: brightness(1.25); }
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.16;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+      animation: noiseShift 3s steps(3) infinite;
+    }
+
+    .cursor-glow {
+      pointer-events: none;
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.13), transparent 62%);
+      z-index: -1;
+      transform: translate(-50%, -50%);
+      transition: 0.08s linear;
+      opacity: 0.8;
+    }
+
+    .spotlight {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.055) 45%, transparent 72%);
+      animation: spotlightSweep 9s ease-in-out infinite;
+      opacity: 0.55;
+    }
+
+    @keyframes spotlightSweep {
+      0% { transform: translateX(-70%) skewX(-18deg); }
+      50% { transform: translateX(45%) skewX(-18deg); }
+      100% { transform: translateX(120%) skewX(-18deg); }
+    }
+
+    .particles {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particles span {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.75);
+      box-shadow: 0 0 18px rgba(255,255,255,0.65);
+      animation: particleFloat 12s linear infinite;
+      opacity: 0;
+    }
+
+    .particles span:nth-child(1) { left: 8%; animation-delay: 0s; animation-duration: 13s; }
+    .particles span:nth-child(2) { left: 18%; animation-delay: 2s; animation-duration: 15s; }
+    .particles span:nth-child(3) { left: 29%; animation-delay: 5s; animation-duration: 11s; }
+    .particles span:nth-child(4) { left: 42%; animation-delay: 1s; animation-duration: 14s; }
+    .particles span:nth-child(5) { left: 51%; animation-delay: 4s; animation-duration: 16s; }
+    .particles span:nth-child(6) { left: 63%; animation-delay: 6s; animation-duration: 12s; }
+    .particles span:nth-child(7) { left: 72%; animation-delay: 3s; animation-duration: 17s; }
+    .particles span:nth-child(8) { left: 81%; animation-delay: 7s; animation-duration: 13s; }
+    .particles span:nth-child(9) { left: 90%; animation-delay: 2.5s; animation-duration: 15s; }
+    .particles span:nth-child(10) { left: 96%; animation-delay: 5.5s; animation-duration: 12s; }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.45; }
+      50% { transform: translate(150px, 95px) scale(1.18); opacity: 0.95; }
+      100% { transform: translate(60px, 180px) scale(1.06); opacity: 0.7; }
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(110vh) translateX(0) scale(0.8); opacity: 0; }
+      10% { opacity: 0.75; }
+      70% { opacity: 0.55; }
+      100% { transform: translateY(-15vh) translateX(80px) scale(1.3); opacity: 0; }
+    }
+
+    @keyframes noiseShift {
+      0% { transform: translate(0, 0); }
+      33% { transform: translate(-2%, 1%); }
+      66% { transform: translate(1%, -2%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(110vh) translateX(0) scale(0.8); opacity: 0; }
+      10% { opacity: 0.75; }
+      70% { opacity: 0.55; }
+      100% { transform: translateY(-15vh) translateX(80px) scale(1.3); opacity: 0; }
+    }
+
+    @keyframes noiseShift {
+      0% { transform: translate(0, 0); }
+      33% { transform: translate(-2%, 1%); }
+      66% { transform: translate(1%, -2%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to { background-position: 116px 116px; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(34px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes floatPanel {
+      from { transform: translateY(0); }
+      to { transform: translateY(-12px); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    header {
+      width: min(1180px, calc(100% - 32px));
+      margin: 16px auto 0;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      background: rgba(8, 8, 8, 0.72);
+      backdrop-filter: blur(22px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 18px 70px rgba(0,0,0,0.45);
+      animation: fadeIn 0.7s ease both;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.35rem;
+      font-weight: 950;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .logo img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 16px rgba(255,255,255,0.28));
+    }
+
+    .logo span {
+      color: #cfcfcf;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #d7d7d7;
+      font-size: 0.94rem;
+      font-weight: 700;
+    }
+
+    nav a {
+      padding: 10px 13px;
+      border-radius: 999px;
+      transition: 0.24s ease;
+    }
+
+    nav a:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 22px;
+      border-radius: 14px;
+      font-weight: 950;
+      transition: 0.24s ease;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      min-height: 48px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ffffff, #ff2b2b);
+      color: #000;
+      box-shadow: 0 0 36px rgba(255,43,43,0.28), inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.055);
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: translateY(-4px);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 60px rgba(255,43,43,0.55), inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: var(--border-bright);
+    }
+
+    .page {
+      display: none;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 70px 0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .active-page {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeUp 0.45s ease both;
+    }
+
+    .hero.active-page {
+      display: grid;
+    }
+
+    .hero {
+      min-height: calc(100vh - 92px);
+      grid-template-columns: 1.04fr 0.96fr;
+      align-items: center;
+      gap: 42px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      color: #ededed;
+      margin-bottom: 22px;
+      font-size: 0.86rem;
+      font-weight: 850;
+      box-shadow: 0 0 24px rgba(255,255,255,0.06);
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6.4rem);
+      line-height: 0.92;
+      letter-spacing: -4.5px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(180deg, #fff, #a8a8a8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 36px rgba(255,255,255,0.08);
+    }
+
+    .hero p {
+      color: #bdbdbd;
+      max-width: 640px;
+      font-size: 1.12rem;
+      line-height: 1.75;
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .mini-proof {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 30px;
+      max-width: 670px;
+    }
+
+    .trust-strip {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: #d9d9d9;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .trust-strip span {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .proof-box {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .proof-box strong {
+      display: block;
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .proof-box small {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .hero-card {
+      position: relative;
+      min-height: 520px;
+      border-radius: 34px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.65);
+      animation: floatPanel 4.5s ease-in-out infinite alternate;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      background: conic-gradient(from 180deg, transparent, rgba(255,255,255,0.18), transparent, rgba(255,255,255,0.07), transparent);
+      animation: spin 8s linear infinite;
+      opacity: 0.65;
+    }
+
+    .hero-card-inner {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      min-height: 476px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,0.12), transparent 30%),
+        rgba(0,0,0,0.82);
+      border: 1px solid rgba(255,255,255,0.11);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .big-v {
+      width: min(360px, 75%);
+      filter: drop-shadow(0 0 45px rgba(255,255,255,0.22));
+      opacity: 0.95;
+    }
+
+    .orb {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      box-shadow: 0 0 60px rgba(255,255,255,0.06), inset 0 0 60px rgba(255,255,255,0.04);
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 42px;
+    }
+
+    .section-title .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: #dcdcdc;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.055);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-weight: 900;
+      font-size: 0.78rem;
+      letter-spacing: 0.7px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(2.3rem, 5vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: -2px;
+      margin-bottom: 14px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    .features,
+    .products,
+    .included-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .features {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .products {
+      grid-template-columns: repeat(5, 1fr);
+      align-items: stretch;
+    }
+
+    .included-grid {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 20px;
+    }
+
+    .card,
+    .included-card {
+      position: relative;
+      background: linear-gradient(180deg, rgba(255,255,255,0.068), rgba(255,255,255,0.035));
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 26px;
+      transition: 0.25s ease;
+      overflow: hidden;
+      box-shadow: 0 16px 55px rgba(0,0,0,0.28);
+    }
+
+    .card::before,
+    .included-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 0%, rgba(255,255,255,0.11), transparent 35%);
+      opacity: 0;
+      transition: 0.25s ease;
+    }
+
+    .card:hover,
+    .included-card:hover {
+      transform: translateY(-10px) scale(1.018);
+      border-color: rgba(255,43,43,0.45);
+      box-shadow: 0 26px 85px rgba(0,0,0,0.42), 0 0 45px rgba(255,43,43,0.20);
+    }
+
+    .card:hover::before,
+    .included-card:hover::before {
+      opacity: 1;
+    }
+
+    .card > *,
+    .included-card > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #ffffff, #cfcfcf);
+      color: #000;
+      margin-bottom: 18px;
+      font-weight: 950;
+      font-size: 1.35rem;
+      box-shadow: 0 0 26px rgba(255,255,255,0.18);
+    }
+
+    .tier-badge {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #dfdfdf;
+      font-size: 0.72rem;
+      font-weight: 950;
+      letter-spacing: 0.7px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid var(--border);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      color: #d8d8d8;
+    }
+
+    .comparison-table th:first-child,
+    .comparison-table td:first-child { text-align: left; }
+    .comparison-table th { color: #fff; background: rgba(255,255,255,0.06); }
+
+    .info-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .info-pill {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+    }
+
+    .info-pill strong {
+      display: block;
+      font-size: 1.55rem;
+      margin-bottom: 4px;
+    }
+
+    .info-pill small {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      color: #000;
+      font-weight: 950;
+      margin-bottom: 16px;
+      box-shadow: 0 0 25px rgba(255,255,255,0.18);
+    }
+
+    .products .card {
+      min-height: 395px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .products .card .btn {
+      margin-top: auto;
+    }
+
+    .faq-list { display: grid; gap: 16px; max-width: 900px; margin: 0 auto; }
+    .faq-item { padding: 22px; border-radius: 22px; background: linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.035)); border: 1px solid var(--border); }
+    .faq-item h3 { margin-bottom: 8px; }
+    .faq-item p { color: #bdbdbd; line-height: 1.7; }
+
+    .card h3 {
+      font-size: 1.55rem;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .card p,
+    .card li {
+      color: #c9c9c9;
+      line-height: 1.68;
+    }
+
+    .price {
+      font-size: 2.6rem;
+      font-weight: 950;
+      margin: 16px 0;
+      letter-spacing: -1.5px;
+      background: linear-gradient(180deg, #ffffff, #bfbfbf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .popular {
+      border-color: rgba(255,255,255,0.48);
+      box-shadow: 0 0 55px rgba(255,255,255,0.10), 0 18px 70px rgba(0,0,0,0.4);
+    }
+
+    .popular::after {
+      content: "BEST SELLER";
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 0.7rem;
+      font-weight: 950;
+      color: #000;
+      background: #fff;
+      padding: 8px 11px;
+      border-radius: 999px;
+      z-index: 5;
+    }
+
+    ul {
+      list-style: none;
+      margin: 18px 0 24px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    .included-card {
+      padding: 12px;
+      border-radius: 22px;
+    }
+
+    .included-card img {
+      width: 100%;
+      height: 178px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      display: block;
+      background: #111;
+    }
+
+    .included-card h4 {
+      margin-top: 13px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .detail-card {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .detail-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 28px;
+      margin-top: 24px;
+    }
+
+    .cta {
+      text-align: center;
+      border-radius: 34px;
+      padding: 70px 30px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.13), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.035));
+      border: 1px solid var(--border);
+      box-shadow: 0 30px 100px rgba(0,0,0,0.45);
+    }
+
+    .cta h2 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+
+    .cta p {
+      color: #c9c9c9;
+      margin-bottom: 26px;
+      line-height: 1.7;
+    }
+
+    footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 18px;
+      padding: 22px 0;
+      color: #9e9e9e;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 1100px) {
+      nav { display: none; }
+      .hero { grid-template-columns: 1fr; padding-top: 55px; }
+      .features, .products, .included-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      header { top: 8px; width: calc(100% - 18px); }
+      .page { width: calc(100% - 18px); padding: 45px 0; }
+      .features, .products, .included-grid, .mini-proof, .detail-list, .info-strip { grid-template-columns: 1fr; }
+      .hero h1 { letter-spacing: -2px; }
+      .hero-card { min-height: 390px; }
+      .hero-card-inner { min-height: 346px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="animated-bg"></div>
+  <div class="grid-lines"></div>
+  <canvas id="particleCanvas"></canvas>
+  <div class="noise"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="spotlight"></div>
+  <div class="particles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <header>
+    <div class="logo">
+      <img src="images/logo.png" alt="VizelsTweaks Logo">
+      <div>Vizels<span>Tweaks</span></div>
+    </div>
+
+    <nav>
+      <a href="#" onclick="showPage('home')">Home</a>
+      <a href="#" onclick="showPage('features')">Features</a>
+      <a href="#" onclick="showPage('products')">Products</a>
+      <a href="#" onclick="showPage('comparison')">Compare</a>
+      <a href="#" onclick="showPage('why-choose-us')">Why Choose Us</a>
+      <a href="#" onclick="showPage('how-it-works')">How It Works</a>
+      <a href="#" onclick="showPage('trusted')">Trusted</a>
+      <a href="#" onclick="showPage('contact-us')">Contact</a>
+      <a href="#" onclick="showPage('faq')">FAQ</a>
+    </nav>
+
+    <a class="btn btn-primary" href="https://discord.gg/uGxXJYHg5H" target="_blank">Join Discord</a>
+  </header>
+
+  <main id="home" class="hero page active-page">
+    <div>
+      <div class="badge">✦ Gaming Optimization • Windows Tweaks • FPS Boost</div>
+      <h1>Optimize Your PC With <span>VizelsTweaks</span></h1>
+      <p>
+        Premium black-and-white optimization panels built for gamers who want a cleaner Windows setup,
+        smoother gameplay, and a more professional performance experience.
+      </p>
+
+      <div class="hero-buttons">
+        <a class="btn btn-primary" href="#" onclick="showPage('products')">View Products</a>
+        <a class="btn btn-secondary" href="#" onclick="showPage('why-choose-us')">Learn More</a>
+      </div>
+
+      <div class="mini-proof">
+        <div class="proof-box"><strong id="productCounter">0</strong><small>Products</small></div>
+        <div class="proof-box"><strong id="cleanCounter">0%</strong><small>Clean UI</small></div>
+        <div class="proof-box"><strong id="supportCounter">0/7</strong><small>Discord Access</small></div>
+      </div>
+
+      <div class="boost-box">
+        <h3>Performance-Focused Product Lineup</h3>
+        <p>A visual preview of how complete the VizelsTweaks product ecosystem is becoming.</p>
+        <div class="boost-bar"><div class="boost-fill"></div></div>
+      </div>
+
+      <div class="trust-strip">
+        <span>✓ Stripe Checkout</span>
+        <span>✓ Discord Support</span>
+        <span>✓ Restore Point Focus</span>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-card-inner">
+        <div class="orb"></div>
+        <img class="big-v" src="images/logo.png" alt="VizelsTweaks V Logo">
+      </div>
+    </div>
+  </main>
+
+  <section id="features" class="page">
+    <div class="section-title">
+      <span class="eyebrow">FEATURES</span>
+      <h2>Built For Performance</h2>
+      <p>Clean tools, simple product tiers, and a professional layout made for your tweaking brand.</p>
+    </div>
+
+    <div class="features">
+      <div class="card"><div class="icon">⚡</div><h3>Performance Tweaks</h3><p>Windows settings, power options, cleanup tools, and gaming-focused adjustments.</p></div>
+      <div class="card"><div class="icon">🎮</div><h3>Gaming Setup</h3><p>Panels made for users who want smoother gameplay and less background clutter.</p></div>
+      <div class="card"><div class="icon">🧹</div><h3>Debloat Tools</h3><p>Cleaner system setup, startup reduction, and basic service cleanup options.</p></div>
+    </div>
+  </section>
+
+  <section id="why-choose-us" class="page">
+    <div class="section-title">
+      <span class="eyebrow">WHY VIZELS</span>
+      <h2>Why Choose Us?</h2>
+      <p>VizelsTweaks is designed to look premium, feel simple, and give customers clear product options.</p>
+    </div>
+
+    <div class="features">
+      <div class="card"><div class="icon">✓</div><h3>Clean Branding</h3><p>Black-and-white style with polished cards, smooth animations, and a professional layout.</p></div>
+      <div class="card"><div class="icon">★</div><h3>Simple Products</h3><p>Basic, Expert, and Extreme are separated clearly so customers know what they are buying.</p></div>
+      <div class="card"><div class="icon">?</div><h3>Discord Support</h3><p>Customers can join Discord for questions, support tickets, and purchase help.</p></div>
+    </div>
+  </section>
+
+  <section id="products" class="page">
+    <div class="info-strip">
+      <div class="info-pill"><strong>7</strong><small>Total Products</small></div>
+      <div class="info-pill"><strong>Free</strong><small>Starter Pricing</small></div>
+      <div class="info-pill"><strong>24/7</strong><small>Discord Access</small></div>
+      <div class="info-pill"><strong>Safe</strong><small>Restore Point Focus</small></div>
+    </div>
+
+    
+    <div class="section-title">
+      <span class="eyebrow">PRODUCTS</span>
+      <h2>Choose Your Panel</h2>
+      <p>Pick the version that fits your setup. Each product has its own details page and checkout button.</p>
+    </div>
+
+    <div class="products">
+      <div class="card">
+        <span class="tier-badge">FREE</span>
+        <h3>VizelsFreePanel</h3>
+        <div class="price">Free</div>
+        <ul>
+          <li>✓ Free Starter Panel</li>
+          <li>✓ Basic Optimization Tools</li>
+          <li>✓ Simple Windows Tweaks</li>
+          <li>✓ Great For New Users</li>
+        </ul>
+        <a class="btn btn-secondary" href="https://gofile.io/d/ctbPyU" target="_blank">Download Free</a>
+      </div>
+
+      
+      <div class="card">
+        <span class="tier-badge">STARTER</span>
+        <h3>Basic</h3>
+        <div class="price">$10</div>
+        <ul>
+          <li>✓ Basic Windows Optimization</li>
+          <li>✓ Simple Debloat</li>
+          <li>✓ Restore Point Tool</li>
+          <li>✓ Beginner Friendly</li>
+        </ul>
+        <a class="btn btn-secondary" href="#" onclick="showPage('basic-details')">View Basic</a>
+      </div>
+
+      <div class="card">
+        <span class="tier-badge">BEST VALUE</span>
+        <h3>Expert</h3>
+        <div class="price">$25</div>
+        <ul>
+          <li>✓ Advanced Windows Tweaks</li>
+          <li>✓ Network Tools</li>
+          <li>✓ Debloat Tools</li>
+          <li>✓ Better Gaming Performance</li>
+        </ul>
+        <a class="btn btn-secondary" href="#" onclick="showPage('expert-details')">View Expert</a>
+      </div>
+
+      <div class="card popular">
+        <span class="tier-badge">FULL POWER</span>
+        <h3>Extreme</h3>
+        <div class="price">$30</div>
+        <ul>
+          <li>✓ Everything in Expert</li>
+          <li>✓ Full Optimization Panel</li>
+          <li>✓ Advanced Debloat</li>
+          <li>✓ Best For Competitive Gaming</li>
+        </ul>
+        <a class="btn btn-primary" href="#" onclick="showPage('extreme-details')">View Extreme</a>
+      </div>
+
+      <div class="card popular">
+        <span class="tier-badge">COLLAB</span>
+        <h3>VizelXVero</h3>
+        <div class="price">$40</div>
+        <ul>
+          <li>✓ Professional Optimization Suite</li>
+          <li>✓ 50 Main Tweaks</li>
+          <li>✓ CPU/GPU/Network Tweaks</li>
+          <li>✓ Advanced Modules</li>
+        </ul>
+        <a class="btn btn-primary" href="#" onclick="showPage('vizelxvero-details')">View VizelXVero</a>
+      </div>
+
+      <div class="card">
+        <span class="tier-badge">CONSOLE</span>
+        <h3>Xbox Pack</h3>
+        <div class="price">$5</div>
+        <ul>
+          <li>✓ Xbox Performance Guide</li>
+          <li>✓ Setup Tips</li>
+          <li>✓ Cleaner Console Settings</li>
+          <li>✓ Beginner Friendly</li>
+        </ul>
+        <a class="btn btn-secondary" href="https://buy.stripe.com/3cIeVfagS4S2d8Z7F1gjC09" target="_blank">Buy Xbox Pack</a>
+      </div>
+
+      <div class="card">
+        <span class="tier-badge">CONSOLE</span>
+        <h3>PlayStation Pack</h3>
+        <div class="price">$5</div>
+        <ul>
+          <li>✓ PlayStation Settings Guide</li>
+          <li>✓ Console Optimization Tips</li>
+          <li>✓ Gaming Setup Help</li>
+          <li>✓ Simple Instructions</li>
+        </ul>
+        <a class="btn btn-secondary" href="https://buy.stripe.com/eVq14pfBc70a2ul1gDgjC0a" target="_blank">Buy PlayStation Pack</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="basic-details" class="page">
+    <div class="section-title">
+      <span class="eyebrow">BASIC PACKAGE</span>
+      <h2>VizelsTweaks Basic</h2>
+      <p>A simple starter version with useful Windows tweaks, restore tools, and extra settings.</p>
+    </div>
+
+    <div class="card detail-card">
+      <h3>Basic Overview</h3>
+      <div class="price">$10</div>
+      <p>VizelsTweaks Basic is a clean starter panel made for users who want simple Windows optimizations without anything too complicated.</p>
+
+      <ul class="detail-list">
+        <li>✓ Home Dashboard</li>
+        <li>✓ Basic Tweaks</li>
+        <li>✓ Restore Point Tool</li>
+        <li>✓ Extra Settings</li>
+      </ul>
+
+      <h3 style="margin-top: 34px; margin-bottom: 14px;">What's Included</h3>
+      <div class="included-grid">
+        <div class="included-card"><img src="images/basic-home.png" alt="Basic Home"><h4>Home Dashboard</h4></div>
+        <div class="included-card"><img src="images/basic-tweaks.png" alt="Basic Tweaks"><h4>Basic Tweaks</h4></div>
+        <div class="included-card"><img src="images/basic-restore.png" alt="Basic Restore"><h4>Restore</h4></div>
+        <div class="included-card"><img src="images/basic-extra.png" alt="Basic Extra"><h4>Extra</h4></div>
+      </div>
+
+      <div class="hero-buttons" style="margin-top: 28px;">
+        <a class="btn btn-primary" href="https://buy.stripe.com/aFa4gBgFg0BMed39N9gjC08" target="_blank">Buy Basic</a>
+        <a class="btn btn-secondary" href="#" onclick="showPage('products')">Back To Products</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="expert-details" class="page">
+    <div class="section-title">
+      <span class="eyebrow">EXPERT PACKAGE</span>
+      <h2>VizelsTweaks Expert</h2>
+      <p>A stronger optimization package with main tweaks, network tools, debloat, restore, and extra settings.</p>
+    </div>
+
+    <div class="card detail-card">
+      <h3>Expert Overview</h3>
+      <div class="price">$25</div>
+      <p>VizelsTweaks Expert is made for users who want more control than Basic without needing the full Extreme panel.</p>
+
+      <ul class="detail-list">
+        <li>✓ Home Dashboard</li>
+        <li>✓ Main Tweaks</li>
+        <li>✓ Network Tools</li>
+        <li>✓ Debloat Tools</li>
+        <li>✓ Restore Point Tool</li>
+        <li>✓ Extra Settings</li>
+      </ul>
+
+      <h3 style="margin-top: 34px; margin-bottom: 14px;">What's Included</h3>
+      <div class="included-grid">
+        <div class="included-card"><img src="images/expert-home.png" alt="Expert Home"><h4>Home Dashboard</h4></div>
+        <div class="included-card"><img src="images/expert-main-tweaks.png" alt="Expert Main Tweaks"><h4>Main Tweaks</h4></div>
+        <div class="included-card"><img src="images/expert-network.png" alt="Expert Network"><h4>Network</h4></div>
+        <div class="included-card"><img src="images/expert-debloat.png" alt="Expert Debloat"><h4>Debloat</h4></div>
+        <div class="included-card"><img src="images/expert-restore.png" alt="Expert Restore"><h4>Restore</h4></div>
+        <div class="included-card"><img src="images/expert-extra.png" alt="Expert Extra"><h4>Extra</h4></div>
+      </div>
+
+      <div class="hero-buttons" style="margin-top: 28px;">
+        <a class="btn btn-primary" href="https://buy.stripe.com/9B66oJ4Wycku0mdbVhgjC06" target="_blank">Buy Expert</a>
+        <a class="btn btn-secondary" href="#" onclick="showPage('products')">Back To Products</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="extreme-details" class="page">
+    <div class="section-title">
+      <span class="eyebrow">EXTREME PACKAGE</span>
+      <h2>VizelsTweaks Extreme</h2>
+      <p>The most complete VizelsTweaks package for users who want the best setup we offer.</p>
+    </div>
+
+    <div class="card detail-card popular">
+      <h3>Extreme Overview</h3>
+      <div class="price">$30</div>
+      <p>VizelsTweaks Extreme is our highest-tier optimization package made for serious gamers who want a cleaner, smoother, and more responsive Windows setup.</p>
+
+      <ul class="detail-list">
+        <li>✓ Home Dashboard</li>
+        <li>✓ 35 Main Tweaks</li>
+        <li>✓ Network Tweaks</li>
+        <li>✓ Debloat Tools</li>
+        <li>✓ VizelsGameBooster</li>
+        <li>✓ GPU Tweaks</li>
+        <li>✓ Input Tweaks</li>
+        <li>✓ Restore Point Tool</li>
+        <li>✓ Extra Tweaks</li>
+        <li>✓ Appearance Settings</li>
+      </ul>
+
+      <h3 style="margin-top: 34px; margin-bottom: 14px;">What's Included</h3>
+      <div class="included-grid">
+        <div class="included-card"><img src="images/home.png" alt="Extreme Home"><h4>Home Dashboard</h4></div>
+        <div class="included-card"><img src="images/main-tweaks.png" alt="Extreme Main Tweaks"><h4>Main Tweaks</h4></div>
+        <div class="included-card"><img src="images/network.png" alt="Extreme Network"><h4>Network Tweaks</h4></div>
+        <div class="included-card"><img src="images/debloat.png" alt="Extreme Debloat"><h4>Debloat</h4></div>
+        <div class="included-card"><img src="images/gamebooster.png" alt="Extreme Game Booster"><h4>VizelsGameBooster</h4></div>
+        <div class="included-card"><img src="images/gpu.png" alt="Extreme GPU"><h4>GPU Tweaks</h4></div>
+        <div class="included-card"><img src="images/input.png" alt="Extreme Input"><h4>Input Tweaks</h4></div>
+        <div class="included-card"><img src="images/restore.png" alt="Extreme Restore"><h4>Restore Point</h4></div>
+        <div class="included-card"><img src="images/extra.png" alt="Extreme Extra"><h4>Extra</h4></div>
+      </div>
+
+      <div class="hero-buttons" style="margin-top: 28px;">
+        <a class="btn btn-primary" href="https://buy.stripe.com/bJeaEZ1KmesCfh7f7tgjC05" target="_blank">Buy Extreme</a>
+        <a class="btn btn-secondary" href="#" onclick="showPage('products')">Back To Products</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="page">
+    <div class="section-title">
+      <span class="eyebrow">PROCESS</span>
+      <h2>How It Works</h2>
+      <p>Simple checkout, easy support, and clear product delivery through Discord.</p>
+    </div>
+
+    <div class="features">
+      <div class="card"><div class="step-number">1</div><h3>Pick A Product</h3><p>Choose VizelsFreePanel, Basic, Expert, Extreme, VizelXVero, Xbox Pack, or PlayStation Pack from the products page.</p></div>
+      <div class="card"><div class="step-number">2</div><h3>Checkout Securely</h3><p>Use the Stripe checkout button for the product you want to purchase.</p></div>
+      <div class="card"><div class="step-number">3</div><h3>Join Discord</h3><p>Open a ticket with your order information to get support and delivery help.</p></div>
+    </div>
+  </section>
+
+  <section id="trusted" class="page">
+    <div class="section-title">
+      <span class="eyebrow">TRUSTED BY</span>
+      <h2>Built For Gamers</h2>
+      <p>A clean product lineup for players, low-end PC users, and people who want simple optimization panels.</p>
+    </div>
+
+    <div class="features">
+      <div class="card"><div class="icon">🏆</div><h3>Competitive Players</h3><p>Made for gamers who care about smooth gameplay, cleaner setups, and less background clutter.</p></div>
+      <div class="card"><div class="icon">🖥️</div><h3>Low-End PC Users</h3><p>Useful for people who want simple cleanup tools and performance-focused Windows settings.</p></div>
+      <div class="card"><div class="icon">🎧</div><h3>Discord Customers</h3><p>Support, questions, product delivery, and updates are handled through your Discord server.</p></div>
+    </div>
+  </section>
+
+  <section id="comparison" class="page">
+    <div class="section-title">
+      <span class="eyebrow">COMPARE</span>
+      <h2>Find Your Best Fit</h2>
+      <p>Quickly compare what each VizelsTweaks package is focused on.</p>
+    </div>
+
+    <table class="comparison-table">
+      <tr><th>Feature</th><th>Basic</th><th>Expert</th><th>Extreme</th><th>VizelXVero</th></tr>
+      <tr><td>Windows Tweaks</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Network Tools</td><td>—</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Debloat Tools</td><td>Light</td><td>✓</td><td>Advanced</td><td>Advanced</td></tr>
+      <tr><td>Game Booster</td><td>—</td><td>—</td><td>✓</td><td>✓</td></tr>
+      <tr><td>GPU/Input Tweaks</td><td>—</td><td>—</td><td>✓</td><td>✓</td></tr>
+      <tr><td>Best For</td><td>Beginners</td><td>Most users</td><td>Competitive gamers</td><td>Full advanced suite</td></tr>
+    </table>
+  </section>
+
+  <section id="vizelxvero-details" class="page">
+    <div class="section-title">
+      <span class="eyebrow">COLLAB PACKAGE</span>
+      <h2>VizelXVero</h2>
+      <p>A premium collaboration panel with a professional red-and-black optimization suite style.</p>
+    </div>
+
+    <div class="card detail-card popular">
+      <h3>VizelXVero Overview</h3>
+      <div class="price">$40</div>
+      <p>
+        VizelXVero is a top-tier optimization product built for users who want a bigger, more advanced panel experience.
+        It includes system restore, main tweaks, network tweaks, CPU tweaks, GPU tweaks, game booster tools, debloat, process lowering,
+        BIOS recommendations, resources, AI booster options, and input tweaks.
+      </p>
+
+      <ul class="detail-list">
+        <li>✓ Home Dashboard</li>
+        <li>✓ System Restore</li>
+        <li>✓ Main Tweaks</li>
+        <li>✓ Network Tweaks</li>
+        <li>✓ CPU Tweaks</li>
+        <li>✓ GPU Tweaks</li>
+        <li>✓ Vizel Game Booster</li>
+        <li>✓ Debloat Tools</li>
+        <li>✓ Process Lowerer</li>
+        <li>✓ BIOS Tweaks</li>
+        <li>✓ Resources</li>
+        <li>✓ AI Booster</li>
+        <li>✓ Input Tweaks</li>
+      </ul>
+
+      <h3 style="margin-top: 34px; margin-bottom: 14px;">What's Included</h3>
+      <div class="included-grid">
+        <div class="included-card"><img src="images/vizelxvero-home.png" alt="VizelXVero Home"><h4>Home</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-restore.png" alt="VizelXVero System Restore"><h4>System Restore</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-main-tweaks.png" alt="VizelXVero Main Tweaks"><h4>Main Tweaks</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-network.png" alt="VizelXVero Network Tweaks"><h4>Network Tweaks</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-cpu.png" alt="VizelXVero CPU Tweaks"><h4>CPU Tweaks</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-gpu.png" alt="VizelXVero GPU Tweaks"><h4>GPU Tweaks</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-game-booster.png" alt="VizelXVero Game Booster"><h4>Game Booster</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-debloat.png" alt="VizelXVero Debloat"><h4>Debloat</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-process-lowerer.png" alt="VizelXVero Process Lowerer"><h4>Process Lowerer</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-bios.png" alt="VizelXVero BIOS Tweaks"><h4>BIOS Tweaks</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-resources.png" alt="VizelXVero Resources"><h4>Resources</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-ai-booster.png" alt="VizelXVero AI Booster"><h4>AI Booster</h4></div>
+        <div class="included-card"><img src="images/vizelxvero-input.png" alt="VizelXVero Input"><h4>Input Tweaks</h4></div>
+      </div>
+
+      <div class="hero-buttons" style="margin-top: 28px;">
+        <a class="btn btn-primary" href="https://buy.stripe.com/7sYeVffBc5W6d8ZgbxgjC0b" target="_blank">Buy VizelXVero</a>
+        <a class="btn btn-secondary" href="#" onclick="showPage('products')">Back To Products</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact-us" class="page">
+    <div class="section-title">
+      <span class="eyebrow">CONTACT</span>
+      <h2>Need Help?</h2>
+      <p>Join the Discord server to ask questions, get support, or open a purchase ticket.</p>
+    </div>
+
+    <div class="cta">
+      <h2>Join VizelsTweaks</h2>
+      <p>Get product help, support, announcements, and purchase information directly in Discord.</p>
+      <div class="hero-buttons" style="justify-content:center;">
+        <a class="btn btn-primary" href="https://discord.gg/uGxXJYHg5H" target="_blank">Join Discord</a>
+        <a class="btn btn-secondary" href="https://discord.gg/uGxXJYHg5H" target="_blank">Open Support Ticket</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="page">
+    <div class="section-title">
+      <span class="eyebrow">FAQ</span>
+      <h2>Common Questions</h2>
+      <p>Simple answers for customers before they buy.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item"><h3>How do I get my product?</h3><p>After checkout, join the Discord and open a support ticket with your order info.</p></div>
+      <div class="faq-item"><h3>Which package should I buy?</h3><p>Basic is for starters, Expert is the best middle option, and Extreme is the full panel.</p></div>
+      <div class="faq-item"><h3>Do I need administrator?</h3><p>Most Windows optimization tools work best when the panel is launched as administrator.</p></div>
+      <div class="faq-item"><h3>Can I get support?</h3><p>Yes, support is handled through the VizelsTweaks Discord server.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 VizelsTweaks. All rights reserved.</p>
+    <p>
+      <a href="#" onclick="showPage('products')">Products</a> •
+      <a href="#" onclick="showPage('comparison')">Compare</a> •
+      <a href="#" onclick="showPage('faq')">FAQ</a> •
+      <a href="https://discord.gg/uGxXJYHg5H" target="_blank">Discord</a>
+    </p>
+  </footer>
+
+  <script>
+    const cursorGlow = document.getElementById('cursorGlow');
+    document.addEventListener('mousemove', (e) => {
+      if (cursorGlow) {
+        cursorGlow.style.left = e.clientX + 'px';
+        cursorGlow.style.top = e.clientY + 'px';
+      }
+    });
+
+    function startCounters() {
+      const productCounter = document.getElementById('productCounter');
+      const cleanCounter = document.getElementById('cleanCounter');
+      const supportCounter = document.getElementById('supportCounter');
+
+      let products = 0;
+      let clean = 0;
+      let support = 0;
+
+      const interval = setInterval(() => {
+        products = Math.min(products + 1, 7);
+        clean = Math.min(clean + 10, 100);
+        support = Math.min(support + 1, 24);
+
+        if (productCounter) productCounter.textContent = products;
+        if (cleanCounter) cleanCounter.textContent = clean + '%';
+        if (supportCounter) supportCounter.textContent = support + '/7';
+
+        if (products >= 7 && clean >= 100 && support >= 24) clearInterval(interval);
+      }, 70);
+    }
+
+    function initParticles() {
+      const canvas = document.getElementById('particleCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      function createParticles() {
+        particles = [];
+        for (let i = 0; i < 80; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2.2 + 0.4,
+            speed: Math.random() * 0.55 + 0.12,
+            alpha: Math.random() * 0.5 + 0.15
+          });
+        }
+      }
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.y -= p.speed;
+          p.x += Math.sin(p.y * 0.01) * 0.2;
+          if (p.y < -10) {
+            p.y = canvas.height + 10;
+            p.x = Math.random() * canvas.width;
+          }
+          ctx.fillStyle = `rgba(255, 43, 43, ${p.alpha})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(animateParticles);
+      }
+
+      resizeCanvas();
+      createParticles();
+      animateParticles();
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        createParticles();
+      });
+    }
+
+    startCounters();
+    initParticles();
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active-page');
+      });
+
+      const selectedPage = document.getElementById(pageId);
+      if (selectedPage) {
+        selectedPage.classList.add('active-page');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+</html>
