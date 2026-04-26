@@ -578,8 +578,9 @@
     }
 
     .products {
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       align-items: stretch;
+      gap: 22px;
     }
 
     .included-grid {
@@ -715,13 +716,16 @@
     }
 
     .products .card {
-      min-height: 395px;
+      min-height: 430px;
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
+      padding: 28px;
     }
 
     .products .card .btn {
       margin-top: auto;
+      width: 100%;
     }
 
     .faq-list { display: grid; gap: 16px; max-width: 900px; margin: 0 auto; }
@@ -968,21 +972,20 @@
   </section>
 
   <section id="products" class="page">
-    <div class="info-strip">
-      <div class="info-pill"><strong>8</strong><small>Total Products</small></div>
-      <div class="info-pill"><strong>Free</strong><small>Starter Pricing</small></div>
-      <div class="info-pill"><strong>24/7</strong><small>Discord Access</small></div>
-      <div class="info-pill"><strong>Safe</strong><small>Restore Point Focus</small></div>
-    </div>
-
-    
     <div class="section-title">
       <span class="eyebrow">PRODUCTS</span>
-      <h2>Choose Your Panel</h2>
-      <p>Pick the version that fits your setup. Each product has its own details page and checkout button.</p>
+      <h2>Choose Your Product</h2>
+      <p>Pick the version that fits your setup. Each product has a clean details page or direct checkout/download button.</p>
     </div>
 
-    <div class="products">
+    <div class="info-strip">
+      <div class="info-pill"><strong>8</strong><small>Total Products</small></div>
+      <div class="info-pill"><strong>Free</strong><small>Starter Option</small></div>
+      <div class="info-pill"><strong>Stripe</strong><small>Secure Checkout</small></div>
+      <div class="info-pill"><strong>Discord</strong><small>Support Access</small></div>
+    </div>
+
+    <div class="products" style="margin-top: 28px;">
       <div class="card">
         <span class="tier-badge">FREE</span>
         <h3>VizelsFreePanel</h3>
@@ -996,7 +999,6 @@
         <a class="btn btn-secondary" href="https://gofile.io/d/ctbPyU" target="_blank">Download Free</a>
       </div>
 
-      
       <div class="card">
         <span class="tier-badge">STARTER</span>
         <h3>Basic</h3>
@@ -1049,7 +1051,9 @@
         <a class="btn btn-secondary" href="#" onclick="showPage('vizelsmacro-details')">View VizelsMacro</a>
       </div>
 
-      $1
+      <div class="card popular">
+        <span class="tier-badge">COLLAB</span>
+        <h3>VizelXVero</h3>
         <div class="price">$40</div>
         <ul>
           <li>✓ Professional Optimization Suite</li>
@@ -1288,7 +1292,7 @@
       </div>
 
       <div class="hero-buttons" style="margin-top: 28px;">
-        <a class="btn btn-primary" href="https://discord.gg/uGxXJYHg5H" target="_blank">Buy VizelsMacro</a>
+        <a class="btn btn-primary" href="https://buy.stripe.com/8x25kF2Oqacm1qh3oLgjC0c" target="_blank">Buy VizelsMacro</a>
         <a class="btn btn-secondary" href="#" onclick="showPage('products')">Back To Products</a>
       </div>
     </div>
