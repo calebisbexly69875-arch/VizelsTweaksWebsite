@@ -1,4 +1,21 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VizelTweaks</title>
+</head>
+
+<body>
+
+  <!-- your website HTML goes here -->
+
+  <script>
+    const cursorGlow = document.getElementById('cursorGlow');
+
+    document.addEventListener('mousemove', e => {
+      if (cursorGlow) {
+        cursorGlow.style.left = e.clientX + 'px';
         cursorGlow.style.top = e.clientY + 'px';
       }
     });
@@ -28,6 +45,7 @@
     function initParticles() {
       const canvas = document.getElementById('particleCanvas');
       if (!canvas) return;
+
       const ctx = canvas.getContext('2d');
       let particles = [];
 
@@ -51,32 +69,34 @@
 
       function animateParticles() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         particles.forEach(p => {
           p.y -= p.speed;
           p.x += Math.sin(p.y * 0.01) * 0.2;
+
           if (p.y < -10) {
             p.y = canvas.height + 10;
             p.x = Math.random() * canvas.width;
           }
+
           ctx.fillStyle = `rgba(255, 43, 43, ${p.alpha})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
         });
+
         requestAnimationFrame(animateParticles);
       }
 
       resizeCanvas();
       createParticles();
       animateParticles();
+
       window.addEventListener('resize', () => {
         resizeCanvas();
         createParticles();
       });
     }
-
-    startCounters();
-    initParticles();
 
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(page => {
@@ -89,6 +109,9 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
+
+    startCounters();
+    initParticles();
   </script>
 </body>
 </html>
