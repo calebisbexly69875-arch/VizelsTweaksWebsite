@@ -47,7 +47,7 @@
         radial-gradient(circle at 80% 35%, rgba(255,255,255,0.08), transparent 28%),
         radial-gradient(circle at 50% 90%, rgba(255,255,255,0.09), transparent 32%),
         #030303;
-      animation: bgPulse 8s ease-in-out infinite alternate;
+      animation: bgPulse 14s ease-in-out infinite alternate;
     }
 
     @keyframes bgPulse {
@@ -64,7 +64,7 @@
       border-radius: 50%;
       background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 60%);
       filter: blur(22px);
-      animation: drift 11s ease-in-out infinite alternate;
+      animation: drift 18s ease-in-out infinite alternate;
     }
 
     .animated-bg::before {
@@ -86,7 +86,7 @@
         linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
       background-size: 58px 58px;
-      animation: gridMove 20s linear infinite;
+      animation: gridMove 45s linear infinite;
       mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent 80%);
     }
 
@@ -97,7 +97,7 @@
       height: 100%;
       z-index: -2;
       pointer-events: none;
-      opacity: 0.75;
+      opacity: 0.28;
     }
 
     .boost-box {
@@ -135,7 +135,7 @@
       background: linear-gradient(90deg, #ff2b2b, #ffffff);
       border-radius: 999px;
       box-shadow: 0 0 22px rgba(255,43,43,0.55);
-      animation: boostPulse 2.2s ease-in-out infinite alternate;
+      animation: boostPulse 4s ease-in-out infinite alternate;
     }
 
     @keyframes boostPulse {
@@ -148,9 +148,9 @@
       position: fixed;
       inset: 0;
       z-index: -1;
-      opacity: 0.16;
+      opacity: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
-      animation: noiseShift 3s steps(3) infinite;
+      animation: none;
     }
 
     .cursor-glow {
@@ -162,8 +162,8 @@
       background: radial-gradient(circle, rgba(255,255,255,0.13), transparent 62%);
       z-index: -1;
       transform: translate(-50%, -50%);
-      transition: 0.08s linear;
-      opacity: 0.8;
+      transition: 0.16s linear;
+      opacity: 0.45;
     }
 
     .spotlight {
@@ -172,8 +172,8 @@
       inset: 0;
       z-index: -2;
       background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.055) 45%, transparent 72%);
-      animation: spotlightSweep 9s ease-in-out infinite;
-      opacity: 0.55;
+      animation: none;
+      opacity: 0;
     }
 
     @keyframes spotlightSweep {
@@ -197,7 +197,7 @@
       border-radius: 50%;
       background: rgba(255,255,255,0.75);
       box-shadow: 0 0 18px rgba(255,255,255,0.65);
-      animation: particleFloat 12s linear infinite;
+      animation: particleFloat 18s linear infinite;
       opacity: 0;
     }
 
@@ -221,7 +221,7 @@
     @keyframes particleFloat {
       0% { transform: translateY(110vh) translateX(0) scale(0.8); opacity: 0; }
       10% { opacity: 0.75; }
-      70% { opacity: 0.55; }
+      70% { opacity: 0; }
       100% { transform: translateY(-15vh) translateX(80px) scale(1.3); opacity: 0; }
     }
 
@@ -235,7 +235,7 @@
     @keyframes particleFloat {
       0% { transform: translateY(110vh) translateX(0) scale(0.8); opacity: 0; }
       10% { opacity: 0.75; }
-      70% { opacity: 0.55; }
+      70% { opacity: 0; }
       100% { transform: translateY(-15vh) translateX(80px) scale(1.3); opacity: 0; }
     }
 
@@ -491,7 +491,7 @@
       border: 1px solid var(--border);
       overflow: hidden;
       box-shadow: 0 30px 100px rgba(0,0,0,0.65);
-      animation: floatPanel 4.5s ease-in-out infinite alternate;
+      animation: floatPanel 8s ease-in-out infinite alternate;
     }
 
     .hero-card::before {
@@ -499,7 +499,7 @@
       position: absolute;
       inset: -120px;
       background: conic-gradient(from 180deg, transparent, rgba(255,255,255,0.18), transparent, rgba(255,255,255,0.07), transparent);
-      animation: spin 8s linear infinite;
+      animation: spin 20s linear infinite;
       opacity: 0.65;
     }
 
@@ -866,6 +866,28 @@
       .hero-card { min-height: 390px; }
       .hero-card-inner { min-height: 346px; }
     }
+
+    /* Performance fixes: makes the site smoother on slower PCs/phones */
+    @media (max-width: 700px) {
+      #particleCanvas, .particles, .cursor-glow, .hero-card::before {
+        display: none;
+      }
+      .animated-bg, .grid-lines, .hero-card {
+        animation: none !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+      #particleCanvas, .particles, .cursor-glow, .spotlight, .noise {
+        display: none !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -1415,7 +1437,7 @@
       let support = 0;
 
       const interval = setInterval(() => {
-        products = Math.min(products + 1, 7);
+        products = Math.min(products + 1, 8);
         clean = Math.min(clean + 10, 100);
         support = Math.min(support + 1, 24);
 
@@ -1423,7 +1445,7 @@
         if (cleanCounter) cleanCounter.textContent = clean + '%';
         if (supportCounter) supportCounter.textContent = support + '/7';
 
-        if (products >= 7 && clean >= 100 && support >= 24) clearInterval(interval);
+        if (products >= 8 && clean >= 100 && support >= 24) clearInterval(interval);
       }, 70);
     }
 
@@ -1440,18 +1462,24 @@
 
       function createParticles() {
         particles = [];
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 24; i++) {
           particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             size: Math.random() * 2.2 + 0.4,
-            speed: Math.random() * 0.55 + 0.12,
+            speed: Math.random() * 0.25 + 0.06,
             alpha: Math.random() * 0.5 + 0.15
           });
         }
       }
 
-      function animateParticles() {
+      let lastFrame = 0;
+      function animateParticles(time = 0) {
+        if (time - lastFrame < 33) {
+          requestAnimationFrame(animateParticles);
+          return;
+        }
+        lastFrame = time;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
           p.y -= p.speed;
@@ -1460,7 +1488,7 @@
             p.y = canvas.height + 10;
             p.x = Math.random() * canvas.width;
           }
-          ctx.fillStyle = `rgba(255, 43, 43, ${p.alpha})`;
+          ctx.fillStyle = `rgba(255, 43, 43, ${p.alpha * 0.65})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
@@ -1468,6 +1496,7 @@
         requestAnimationFrame(animateParticles);
       }
 
+      if (window.innerWidth <= 700) return;
       resizeCanvas();
       createParticles();
       animateParticles();
